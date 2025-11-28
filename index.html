@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Divya Art Gallery — My Drawing Blog</title>
+
+  <!-- Google Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      --bg: #f6f7fb;
+      --card: #ffffff;
+      --muted: #666;
+      --accent-1: #8e44ad;
+      --accent-2: #3498db;
+      --glass: rgba(255,255,255,0.6);
+      --shadow: 0 6px 20px rgba(16,24,40,0.08);
+      --radius: 14px;
+    }
+    [data-theme="dark"]{
+      --bg: #0f1724;
+      --card: #0b1220;
+      --muted: #9aa6bf;
+      --glass: rgba(255,255,255,0.03);
+      --shadow: 0 8px 30px rgba(2,6,23,0.7);
+    }
+
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family:"Poppins",system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;
+      background: linear-gradient(180deg,var(--bg), #e9eef8 60%);
+      color: #0b1220;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+      scroll-behavior: smooth;
+      transition: background .35s ease, color .35s ease;
+    }
+
+    /* Header / Nav */
+    header{
+      position:sticky;
+      top:0;
+      z-index:50;
+      backdrop-filter: blur(6px);
+      background: linear-gradient(90deg, rgba(255,255,255,0.55), rgba(255,255,255,0.25));
+      border-bottom: 1px solid rgba(0,0,0,0.04);
+      animation: headerIn .6s ease;
+    }
+    @keyframes headerIn { from { transform: translateY(-18px); opacity:0 } to { transform: translateY(0); opacity:1 } }
+    [data-theme="dark"] header{
+      background: rgba(6,10,18,0.55);
+      border-bottom: 1px solid rgba(255,255,255,0.03);
+    }
+    .navwrap{
+      max-width:1120px;
+      margin:0 auto;
+      padding:12px 18px;
+      display:flex;
+      align-items:center;
+      gap:18px;
+    }
+    .brand{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      text-decoration:none;
+      color:inherit;
+    }
+    .logo{
+      width:46px;height:46px;border-radius:10px;
+      background:linear-gradient(135deg,var(--accent-1),var(--accent-2));
+      display:flex;align-items:center;justify-content:center;color:white;font-weight:700;
+      box-shadow: var(--shadow);
+      font-size:18px;
+    }
+    .brand h1{font-size:1.05rem;margin:0}
+    nav{margin-left:auto;display:flex;gap:12px;align-items:center}
+    nav a{
+      text-decoration:none;color:var(--muted);font-weight:600;padding:8px 12px;border-radius:10px;
+    }
+    nav a:hover{color: #111; background: rgba(0,0,0,0.04)}
+    .cta-btn{
+      background: linear-gradient(90deg,var(--accent-1),var(--accent-2));
+      color:white;padding:8px 12px;border-radius:10px;font-weight:600;
+      box-shadow: 0 8px 18px rgba(142,68,173,0.12);
+    }
+
+    /* Hero */
+    .hero{
+      max-width:1120px;margin:28px auto;padding:26px 18px;display:grid;grid-template-columns:1fr 360px;gap:22px;align-items:center;
+      animation: heroIn .8s ease;
+    }
+    @keyframes heroIn { from { opacity:0; transform: translateY(18px) } to { opacity:1; transform: translateY(0) } }
+    .hero-card{
+      background:var(--card);border-radius:var(--radius);padding:28px;box-shadow:var(--shadow);
+    }
+    .hero h2{margin:0 0 8px 0;font-size:1.9rem}
+    .hero p{color:var(--muted);line-height:1.6}
+    .hero-right{
+      display:flex;flex-direction:column;gap:12px;align-items:center;
+    }
+    .hero-right img{
+      width:100%;height:260px;object-fit:cover;border-radius:12px;box-shadow:var(--shadow)
+    }
+
+    /* Sections */
+    .container{max-width:1120px;margin:24px auto;padding:0 18px}
+    h3.section-title{font-size:1.25rem;margin:6px 0 12px 0}
+    .muted{color:var(--muted)}
+
+    /* Gallery */
+    .gallery-grid{
+      display:grid;
+      grid-template-columns:repeat(auto-fit, minmax(240px, 1fr));
+      gap:20px;
+      margin-top:12px;
+    }
+    .art-card{
+      background:var(--card);border-radius:12px;overflow:hidden;box-shadow:var(--shadow);
+      position:relative; transform-origin:center;
+      transition: transform .45s cubic-bezier(.2,.9,.3,1), box-shadow .45s;
+      will-change: transform;
+    }
+    .art-card:hover{
+      transform: translateY(-8px) scale(1.02);
+      box-shadow: 0 18px 40px rgba(16,24,40,0.18);
+    }
+    .art-card .imgwrap{position:relative;overflow:hidden;height:260px}
+    .art-card img{
+      width:100%;height:100%;object-fit:cover;display:block;transition:transform .8s cubic-bezier(.2,.9,.3,1);
+      transform-origin:center;
+    }
+    .art-card:hover img{transform:scale(1.08)}
+    .art-meta{padding:12px 14px;display:flex;justify-content:space-between;align-items:center;gap:8px}
+    .art-meta .title{font-weight:600}
+    .art-meta .actions{display:flex;gap:8px}
+    .icon-btn{
+      border:0;background:transparent;padding:8px;border-radius:10px;cursor:pointer;font-weight:600;
+      display:inline-flex;align-items:center;gap:8px;color:var(--muted)
+    }
+    .icon-btn:hover{background:var(--glass);color:inherit}
+
+    /* watermark overlay preview */
+    .wm-overlay{
+      position:absolute;right:10px;bottom:10px;padding:6px 8px;border-radius:6px;
+      background:linear-gradient(90deg, rgba(0,0,0,0.45), rgba(0,0,0,0.12));
+      color:white;font-weight:600;font-size:12px;backdrop-filter: blur(2px);
+    }
+
+    /* About */
+    .about-grid{display:grid;grid-template-columns:1fr 340px;gap:18px;align-items:start}
+    .about-card{padding:18px;background:var(--card);border-radius:12px;box-shadow:var(--shadow)}
+
+    /* Contact */
+    .contact-card{padding:18px;background:var(--card);border-radius:12px;box-shadow:var(--shadow)}
+    .form-row{display:flex;gap:10px}
+    .form-row input,.form-row textarea{
+      width:100%;padding:10px;border-radius:8px;border:1px solid rgba(10,10,10,0.06);background:transparent;color:inherit;
+    }
+    .form-row textarea{min-height:120px;resize:vertical}
+
+    /* Back to top */
+    #backTop{
+      position:fixed;right:18px;bottom:18px;z-index:80;background:linear-gradient(90deg,var(--accent-1),var(--accent-2));
+      color:white;border:0;padding:12px;border-radius:12px;box-shadow:0 6px 18px rgba(0,0,0,0.18);cursor:pointer;display:none;
+    }
+
+    /* Footer */
+    footer{margin-top:32px;padding:18px;text-align:center;color:var(--muted)}
+
+    /* small animation for section titles */
+    .section-title { position:relative; overflow:hidden; }
+    .section-title::after {
+      content: '';
+      height:3px;
+      width:60px;
+      position:absolute;
+      left:0;
+      bottom:-6px;
+      background: linear-gradient(90deg,var(--accent-1),var(--accent-2));
+      border-radius:3px;
+      transform: translateX(-120%);
+      animation: underlineIn .9s forwards .2s;
+    }
+    @keyframes underlineIn { to { transform: translateX(0); } }
+
+    /* Responsive tweaks */
+    @media (max-width:920px){
+      .hero{grid-template-columns:1fr;gap:14px}
+      .about-grid{grid-template-columns:1fr}
+      .art-card .imgwrap{height:200px}
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header / Nav -->
+  <header>
+    <div class="navwrap">
+      <a class="brand" href="#home" title="My Art Gallery">
+        <div class="logo">MA</div>
+        <div>
+          <h1>My Drawing Blog</h1>
+          <div class="muted" style="font-size:0.78rem;margin-top:2px">Welcome to my art space</div>
+        </div>
+      </a>
+
+      <nav>
+        <a href="#home">Home</a>
+        <a href="#gallery">Gallery</a>
+        <a href="#about">About</a>
+        <a href="#contact">Contact</a>
+        <button class="cta-btn" id="themeToggle" title="Toggle light / dark">🌙 Dark</button>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Hero -->
+  <section id="home" class="hero container" aria-label="Hero">
+    <div class="hero-card">
+      <h2>Welcome to my Art Gallery</h2>
+      <p class="muted">I share my creative journey, daily inspirations and artworks here. Art lets us feel, think and connect. Browse the gallery, learn a bit about me, or reach out — everything's on this single page.</p>
+
+      <div style="display:flex;gap:10px;margin-top:16px;flex-wrap:wrap">
+        <a class="cta-btn" href="#gallery">Explore Gallery</a>
+        <a class="icon-btn" href="#contact" style="background:transparent">Contact Me</a>
+      </div>
+    </div>
+
+    <div class="hero-right">
+      <!-- replace filename with your favorite image -->
+      <img src="WhatsApp Image 2025-11-18 at 09.44.01_4469a82f.jpg" alt="Featured artwork" loading="lazy">
+      <div style="width:100%;text-align:center;font-size:0.95rem;color:var(--muted);padding-top:6px">
+        Featured artwork — replace the images folder with your own files
+      </div>
+    </div>
+  </section>
+
+  <!-- Gallery -->
+  <section id="gallery" class="container" aria-label="Gallery">
+    <h3 class="section-title">Gallery</h3>
+    <p class="muted">Click to preview, share, or download (downloaded image will include a watermark).</p>
+
+    <div class="gallery-grid" id="galleryGrid">
+
+      <!-- Existing WhatsApp images (your real filenames) -->
+      <article class="art-card">
+        <div class="imgwrap">
+          <img data-src="WhatsApp Image 2025-11-18 at 09.47.31_1bba427d.jpg" alt="Art 1" loading="lazy">
+          <div class="wm-overlay">© MyArt</div>
+        </div>
+        <div class="art-meta">
+          <div>
+            <div class="title">Artwork 1</div>
+            <div class="muted" style="font-size:0.85rem">Pencil / Paper</div>
+          </div>
+          <div class="actions">
+            <button class="icon-btn" onclick="openPreview(this)" title="Preview">Preview</button>
+            <button class="icon-btn" onclick="shareImage(this)" title="Share">Share</button>
+            <button class="icon-btn" onclick="downloadWatermarked(this)" title="Download">Download</button>
+          </div>
+        </div>
+      </article>
+
+      <article class="art-card">
+        <div class="imgwrap">
+          <img data-src="WhatsApp Image 2025-11-18 at 09.47.34_9ab59d79.jpg" alt="Art 2" loading="lazy">
+          <div class="wm-overlay">© MyArt</div>
+        </div>
+        <div class="art-meta">
+          <div>
+            <div class="title">Artwork 2</div>
+            <div class="muted" style="font-size:0.85rem">Ink / Paper</div>
+          </div>
+          <div class="actions">
+            <button class="icon-btn" onclick="openPreview(this)" title="Preview">Preview</button>
+            <button class="icon-btn" onclick="shareImage(this)" title="Share">Share</button>
+            <button class="icon-btn" onclick="downloadWatermarked(this)" title="Download">Download</button>
+          </div>
+        </div>
+      </article>
+
+      <article class="art-card">
+        <div class="imgwrap">
+          <img data-src="WhatsApp Image 2025-11-18 at 09.45.39_5606e9d7.jpg" alt="Art 3" loading="lazy">
+          <div class="wm-overlay">© MyArt</div>
+        </div>
+        <div class="art-meta">
+          <div>
+            <div class="title">Artwork 3</div>
+            <div class="muted" style="font-size:0.85rem">Digital</div>
+          </div>
+          <div class="actions">
+            <button class="icon-btn" onclick="openPreview(this)" title="Preview">Preview</button>
+            <button class="icon-btn" onclick="shareImage(this)" title="Share">Share</button>
+            <button class="icon-btn" onclick="downloadWatermarked(this)" title="Download">Download</button>
+          </div>
+        </div>
+      </article>
+
+      <article class="art-card">
+        <div class="imgwrap">
+          <img data-src="WhatsApp Image 2025-11-18 at 09.46.09_d9d0e112.jpg" alt="Art 4" loading="lazy">
+          <div class="wm-overlay">© MyArt</div>
+        </div>
+        <div class="art-meta">
+          <div>
+            <div class="title">Artwork 4</div>
+            <div class="muted" style="font-size:0.85rem">Mixed Media</div>
+          </div>
+          <div class="actions">
+            <button class="icon-btn" onclick="openPreview(this)" title="Preview">Preview</button>
+            <button class="icon-btn" onclick="shareImage(this)" title="Share">Share</button>
+            <button class="icon-btn" onclick="downloadWatermarked(this)" title="Download">Download</button>
+          </div>
+        </div>
+      </article>
+
+      <!-- Extra slots - add your images here (rename files or replace src) -->
+      <article class="art-card">
+        <div class="imgwrap">
+          <img data-src="WhatsApp Image 2025-11-18 at 09.47.33_7e44216f.jpg" alt="Art 5" loading="lazy">
+          <div class="wm-overlay">© MyArt</div>
+        </div>
+        <div class="art-meta">
+          <div>
+            <div class="title">Artwork 5</div>
+            <div class="muted" style="font-size:0.85rem">Watercolor</div>
+          </div>
+          <div class="actions">
+            <button class="icon-btn" onclick="openPreview(this)" title="Preview">Preview</button>
+            <button class="icon-btn" onclick="shareImage(this)" title="Share">Share</button>
+            <button class="icon-btn" onclick="downloadWatermarked(this)" title="Download">Download</button>
+          </div>
+        </div>
+      </article>
+
+      <article class="art-card">
+        <div class="imgwrap">
+          <img data-src="WhatsApp Image 2025-11-18 at 09.47.32_ce502362.jpg" alt="Art 6" loading="lazy">
+          <div class="wm-overlay">© MyArt</div>
+        </div>
+        <div class="art-meta">
+          <div>
+            <div class="title">Artwork 6</div>
+            <div class="muted" style="font-size:0.85rem">Charcoal</div>
+          </div>
+          <div class="actions">
+            <button class="icon-btn" onclick="openPreview(this)" title="Preview">Preview</button>
+            <button class="icon-btn" onclick="shareImage(this)" title="Share">Share</button>
+            <button class="icon-btn" onclick="downloadWatermarked(this)" title="Download">Download</button>
+          </div>
+        </div>
+      </article>
+
+      <article class="art-card">
+        <div class="imgwrap">
+          <img data-src="WhatsApp Image 2025-11-18 at 09.47.35_decebd20.jpg" alt="Art 7" loading="lazy">
+          <div class="wm-overlay">© MyArt</div>
+        </div>
+        <div class="art-meta">
+          <div>
+            <div class="title">Artwork 7</div>
+            <div class="muted" style="font-size:0.85rem">Digital</div>
+          </div>
+          <div class="actions">
+            <button class="icon-btn" onclick="openPreview(this)" title="Preview">Preview</button>
+            <button class="icon-btn" onclick="shareImage(this)" title="Share">Share</button>
+            <button class="icon-btn" onclick="downloadWatermarked(this)" title="Download">Download</button>
+          </div>
+        </div>
+      </article>
+
+      <article class="art-card">
+        <div class="imgwrap">
+          <img data-src="WhatsApp Image 2025-11-18 at 09.47.33_814c5b94.jpg" alt="Art 8" loading="lazy">
+          <div class="wm-overlay">© MyArt</div>
+        </div>
+        <div class="art-meta">
+          <div>
+            <div class="title">Artwork 8</div>
+            <div class="muted" style="font-size:0.85rem">Mixed Media</div>
+          </div>
+          <div class="actions">
+            <button class="icon-btn" onclick="openPreview(this)" title="Preview">Preview</button>
+            <button class="icon-btn" onclick="shareImage(this)" title="Share">Share</button>
+            <button class="icon-btn" onclick="downloadWatermarked(this)" title="Download">Download</button>
+          </div>
+        </div>
+      </article>
+
+    </div>
+  </section>
+
+  <!-- About -->
+  <section id="about" class="container" aria-label="About">
+    <h3 class="section-title">About the Artist</h3>
+    <div class="about-grid">
+      <div class="about-card">
+        <p class="muted">Hi — I'm an artist who loves expressive sketches and mixed media. I created this site to showcase my work and to share the process. This portfolio is kept simple so the art can speak for itself. For workshops, commissions, or collaborations, reach out via the contact form.</p>
+
+        <ul style="margin-top:12px;color:var(--muted);line-height:1.7">
+          <li>Mediums: Pencil, Ink, Digital Painting, Mixed Media</li>
+          <li>Workshops: Available on request</li>
+          <li>Based in: Your city</li>
+        </ul>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:12px;">
+        <div class="about-card" style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:18px">
+          <img src="WhatsApp Image 2025-11-18 at 09.44.01_4469a82f.jpg" alt="Artist photo" style="width:100%;height:180px;object-fit:cover;border-radius:10px;box-shadow:var(--shadow)">
+          <div style="margin-top:10px;font-weight:700">Divya A M</div>
+          <div class="muted" style="font-size:0.9rem">Artist & Creator</div>
+        </div>
+
+        <div class="about-card" style="padding:14px;text-align:center">
+          <div style="font-weight:700">Follow me</div>
+          <div class="muted" style="margin-top:8px">Add your social links in the code or via GitHub pages</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Contact -->
+  <section id="contact" class="container" aria-label="Contact">
+    <h3 class="section-title">Contact</h3>
+    <div style="display:grid;grid-template-columns:1fr 360px;gap:18px">
+      <div class="contact-card">
+        <form id="contactForm" onsubmit="handleContact(event)">
+          <div style="margin-bottom:10px">
+            <input name="name" id="name" required placeholder="Your name" style="padding:10px;width:100%;border-radius:8px;border:1px solid rgba(0,0,0,0.06)">
+          </div>
+          <div style="margin-bottom:10px">
+            <input name="email" id="email" type="email" required placeholder="Your email" style="padding:10px;width:100%;border-radius:8px;border:1px solid rgba(0,0,0,0.06)">
+          </div>
+          <div style="margin-bottom:10px">
+            <textarea name="message" id="message" placeholder="Your message" required style="padding:10px;width:100%;border-radius:8px;border:1px solid rgba(0,0,0,0.06)"></textarea>
+          </div>
+          <div style="display:flex;gap:10px;align-items:center">
+            <button class="cta-btn" type="submit">Send Message</button>
+            <div class="muted" id="contactNote" style="font-size:0.9rem">Or email: <a href="mailto:youremail@example.com">youremail@example.com</a></div>
+          </div>
+        </form>
+      </div>
+
+      <aside class="about-card" style="padding:18px">
+        <div style="font-weight:700">Studio Info</div>
+        <div class="muted" style="margin-top:8px">Online Workshops • Commissions Open</div>
+        <div style="margin-top:12px">
+          <strong>Location</strong>
+          <div class="muted">Your City, India</div>
+        </div>
+
+        <div style="margin-top:14px">
+          <strong>Quick Links</strong>
+          <div class="muted" style="margin-top:6px">Download images, share work, or follow on social media.</div>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <footer>
+    <span id="year"></span> My Art Gallery | Designed with ❤️
+  </footer>
+
+  <button id="backTop" aria-label="Back to top">↑ Top</button>
+
+  <!-- Modal Preview -->
+  <div id="previewModal" style="position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(2,6,23,0.6);z-index:120;padding:18px">
+    <div style="max-width:980px;width:100%;background:transparent;position:relative">
+      <button onclick="closePreview()" style="position:absolute;right:-6px;top:-6px;background:#fff;border-radius:50%;border:0;padding:8px;cursor:pointer;box-shadow:0 8px 30px rgba(2,6,23,0.3)">✕</button>
+      <img id="previewImg" src="" alt="Preview" style="width:100%;height:auto;border-radius:12px;box-shadow:0 20px 60px rgba(2,6,23,0.6);display:block">
+      <div style="margin-top:8px;text-align:center;color:white" id="previewCaption"></div>
+    </div>
+  </div>
+
+  <script>
+    // ---------- Initialization ----------
+    const themeToggle = document.getElementById('themeToggle');
+    const root = document.documentElement;
+    const savedTheme = localStorage.getItem('theme') || (window.matchMedia && window.matchMedia('(prefers-color-scheme:dark)').matches ? 'dark' : 'light');
+    setTheme(savedTheme);
+
+    themeToggle.addEventListener('click', () => {
+      const newTheme = (document.documentElement.getAttribute('data-theme') === 'dark') ? 'light' : 'dark';
+      setTheme(newTheme);
+    });
+
+    function setTheme(t){
+      if(t === 'dark'){
+        document.documentElement.setAttribute('data-theme','dark');
+        themeToggle.textContent = '☀️ Light';
+      } else {
+        document.documentElement.removeAttribute('data-theme');
+        themeToggle.textContent = '🌙 Dark';
+      }
+      localStorage.setItem('theme', t);
+    }
+
+    // set current year
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // ---------- Lazy-load images from data-src ----------
+    document.addEventListener('DOMContentLoaded', () => {
+      const imgs = document.querySelectorAll('img[data-src]');
+      imgs.forEach(img=>{
+        const src = img.getAttribute('data-src');
+        // fallback if file not found: try set src directly
+        img.src = src;
+        img.onload = ()=>{ img.removeAttribute('data-src'); }
+        img.onerror = ()=>{ img.alt = 'Image not found — replace with your file in the project folder'; img.style.objectFit='contain'; img.style.background='#f1f1f1' }
+      });
+    });
+
+    // ---------- Back to top ----------
+    const backTop = document.getElementById('backTop');
+    window.addEventListener('scroll', () => {
+      if(window.scrollY > 400) backTop.style.display = 'block';
+      else backTop.style.display = 'none';
+    });
+    backTop.addEventListener('click', ()=> window.scrollTo({top:0,behavior:'smooth'}));
+
+    // ---------- Preview modal ----------
+    function openPreview(btn){
+      const card = btn.closest('.art-card');
+      const img = card.querySelector('img');
+      document.getElementById('previewImg').src = img.src;
+      document.getElementById('previewCaption').textContent = card.querySelector('.title').textContent;
+      document.getElementById('previewModal').style.display = 'flex';
+    }
+    function closePreview(){
+      document.getElementById('previewModal').style.display = 'none';
+      document.getElementById('previewImg').src = '';
+    }
+
+    // close modal on ESC or click outside
+    document.addEventListener('keydown', (e)=> { if(e.key === 'Escape') closePreview(); });
+    document.getElementById('previewModal').addEventListener('click', (e)=> { if(e.target.id === 'previewModal') closePreview(); });
+
+    // ---------- Share (Web Share API fallback) ----------
+    async function shareImage(btn){
+      const card = btn.closest('.art-card');
+      const imgEl = card.querySelector('img');
+      const title = card.querySelector('.title').textContent || document.title;
+      try {
+        if(navigator.share){
+          await navigator.share({title, text: 'Check out this artwork', url: location.href});
+        } else {
+          // fallback: copy image url to clipboard
+          await navigator.clipboard.writeText(imgEl.src);
+          alert('Image URL copied to clipboard. You can paste it to share.');
+        }
+      } catch(err){
+        console.warn('Share failed', err);
+        alert('Sharing is not available in this browser.');
+      }
+    }
+
+    // ---------- Download with watermark ----------
+    // This draws the image to a canvas and then adds a watermark text before triggering download
+    async function downloadWatermarked(btn){
+      const card = btn.closest('.art-card');
+      const imgEl = card.querySelector('img');
+      const title = card.querySelector('.title').textContent.replace(/\s+/g,'_') || 'artwork';
+      try {
+        // Ensure image is loaded
+        if(!imgEl.complete){
+          await new Promise(res=> imgEl.onload = res);
+        }
+        // create canvas scaled to image natural size (limit to avoid huge files)
+        const maxDim = 3000;
+        const iw = imgEl.naturalWidth || imgEl.width;
+        const ih = imgEl.naturalHeight || imgEl.height;
+        const scale = Math.min(1, maxDim / Math.max(iw, ih));
+        const cw = Math.round(iw * scale);
+        const ch = Math.round(ih * scale);
+
+        const canvas = document.createElement('canvas');
+        canvas.width = cw;
+        canvas.height = ch;
+        const ctx = canvas.getContext('2d');
+
+        // draw image
+        ctx.drawImage(imgEl, 0, 0, cw, ch);
+
+        // watermark properties
+        const watermarkText = '© MyArt';
+        const fontSize = Math.max(14, Math.round(cw / 28)); // responsive font
+        ctx.font = `600 ${fontSize}px Poppins, sans-serif`;
+        ctx.textBaseline = 'bottom';
+        ctx.fillStyle = 'rgba(0,0,0,0.55)';
+        ctx.strokeStyle = 'rgba(255,255,255,0.18)';
+        ctx.lineWidth = Math.max(2, fontSize / 10);
+
+        const padding = Math.round(fontSize * 0.8);
+        const textWidth = ctx.measureText(watermarkText).width;
+        const x = cw - textWidth - padding;
+        const y = ch - padding;
+
+        // shadow / stroke to make readable
+        ctx.strokeText(watermarkText, x, y);
+        ctx.fillText(watermarkText, x, y);
+
+        // create download link
+        const link = document.createElement('a');
+        link.download = `${title}_watermarked.png`;
+        link.href = canvas.toDataURL('image/png');
+        // trigger
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+      } catch(err){
+        console.error('Download failed', err);
+        alert('Could not prepare the download. Replace the image path or try a different browser.');
+      }
+    }
+
+    // ---------- Contact form handler ----------
+    function handleContact(e){
+      e.preventDefault();
+      const name = document.getElementById('name').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const message = document.getElementById('message').value.trim();
+      // For single-file GitHub page we can't send server email, so use mailto fallback:
+      const mailto = `mailto:youremail@example.com?subject=${encodeURIComponent('Contact from ' + name)}&body=${encodeURIComponent(message + '\n\nFrom: ' + name + ' (' + email + ')')}`;
+      window.location.href = mailto;
+      // show a small note
+      const note = document.getElementById('contactNote');
+      note.textContent = 'Opening your email client...';
+      setTimeout(()=> note.textContent = 'Or email: divyaam258@gmail.com', 2500);
+      document.getElementById('contactForm').reset();
+    }
+
+    // ---------- Small accessibility: keyboard nav for cards ----------
+    document.addEventListener('keyup', (e) => {
+      if(e.key === 'ArrowRight') { window.scrollBy({left:300, behavior:'smooth'}) }
+      if(e.key === 'ArrowLeft') { window.scrollBy({left:-300, behavior:'smooth'}) }
+    });
+
+    // ---------- Notes for you ----------
+    // - Replace the image filenames with your images in the same folder (or update the paths).
+    // - To add more artworks: duplicate one .art-card block inside #galleryGrid and update data-src.
+    // - If you host on GitHub Pages, set repo to public and push this index.html to the main branch.
+  </script>
+</body>
+</html>
